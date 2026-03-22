@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  course-service:
+    build: .
+    container_name: course-service
+    ports:
+      - '3002:3002'
+    environment:
+      - PORT=3002
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/course-service
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - JWT_SECRET=dev-secret-key-change-in-production
+    depends_on:
+      - mongo
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    container_name: course-mongo
+    ports:
+      - '27018:27017'
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+networks:
+  campus-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
